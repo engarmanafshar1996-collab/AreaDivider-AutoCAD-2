@@ -1,0 +1,28 @@
+name: Build AutoCAD Add-in
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest # AutoCAD development typically targets Windows
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Restore NuGet packages
+      run: msbuild AreaDivider/AreaDivider.csproj /t:Restore
+
+    - name: Build Project
+      run: msbuild AreaDivider/AreaDivider.csproj /p:Configuration=Release /p:Platform="Any CPU"
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: AreaDivider-DLL
+        path: AreaDivider/bin/Release/AreaDivider.dll
